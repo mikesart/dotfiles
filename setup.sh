@@ -11,7 +11,7 @@ copyit()
     fi
 }
 
-mkdir -p .config/htop
+mkdir -p ~/.config/htop
 
 copyit .bashrc
 copyit .bash_aliases
