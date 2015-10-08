@@ -11,6 +11,8 @@ copyit()
     fi
 }
 
+sudo apt-get -y install vim htop tree
+
 mkdir -p ~/.config/htop
 
 copyit .bashrc
