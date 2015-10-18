@@ -11,7 +11,7 @@ copyit()
     fi
 }
 
-sudo apt-get -y install vim htop tree smem
+sudo apt-get -y install vim htop tree smem ncdu
 
 mkdir -p ~/.config/htop
 
