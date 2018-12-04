@@ -21,3 +21,8 @@ copyit .vimrc
 copyit .gitconfig
 copyit .config/htop/htoprc
 
+pushd gdb
+copyit .gdbcolors
+copyit .gdbinit
+copyit .gdbinit.py
+popd
