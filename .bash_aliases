@@ -19,10 +19,12 @@ fi
 export VISUAL=vi
 export EDITOR=vi
 
+shopt -s cdable_vars
+
 export GREP_COLORS='ms=07;33:mc=07;33:sl=:cx=:fn=32:ln=33:bn=33:se=36'
 alias grep='grep --color=always'
 
-export PS1='${debian_chroot:+($debian_chroot)}\[\033[01;31m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+alias libc_version='ldd --version'
 
 export LESS='-QRS --prompt="%f (%pb\%, %lmth line, %L lines)$ '
 
@@ -32,10 +34,18 @@ alias less="LESS_TERMCAP_mb=$'\E[01;31m' LESS_TERMCAP_md=$'\E[01;38;5;74m' LESS_
 
 alias ll="ls -alF --group-directories-first --block-size=\'1"
 
+# remove ls quotes around files with spaces
+# https://unix.stackexchange.com/questions/258679/why-is-ls-suddenly-wrapping-items-with-spaces-in-single-quotes
+export QUOTING_STYLE=literal
+
 alias tree="tree -aCFl --charset=UTF8 --du -h"
+alias tree_nogit="tree -aCFl --charset=UTF8 --du -h -I '.git'"
 
 # what most people want from od (hexdump)
+# hexdump -C ...
 alias hd='od -Ax -tx1z -v'
+
+alias dfc='dfc -Tadso'
 
 # Will show 0644 or 0755 type perms for specified files
 alias stat_perm="stat -c '%n %U:%G-%a'"
@@ -69,24 +79,25 @@ run_on_prompt_command()
 export MARKPATH=$HOME/.marks
 function j
 {
-    cd -P "$MARKPATH/$1" 2>/dev/null || echo "No such mark: $1"
+	cd -P "$MARKPATH/$1" 2>/dev/null || echo "No such mark: $1"
 }
 function jump
 {
-    cd -P "$MARKPATH/$1" 2>/dev/null || echo "No such mark: $1"
+	cd -P "$MARKPATH/$1" 2>/dev/null || echo "No such mark: $1"
 }
 function mark
 {
-    mkdir -p "$MARKPATH";
-    ln -s "$(pwd)" "$MARKPATH/$1"
+	mkdir -p "$MARKPATH";
+	ln -s "$(pwd)" "$MARKPATH/$1"
 }
 function unmark
 {
-    rm -i "$MARKPATH/$1"
+	rm -i "$MARKPATH/$1"
 }
 function marks
 {
-    ls -l "$MARKPATH" | sed 's/  / /g' | cut -d' ' -f9- | sed 's/ -/\t-/g' && echo
+    # ls -l "$MARKPATH" | sed 's/  / /g' | cut -d' ' -f9- | sed 's/ -/\t-/g' && echo
+    find ~/.marks -type l -exec sh -c 'printf "\033[1;36m%-12s\033[0m -> \033[1;34m%s\033[0m\n" $(basename {}) $(readlink -f {})' \; | sort
 }
 
 _completemarks()
@@ -98,22 +109,70 @@ _completemarks()
 }
 complete -F _completemarks jump unmark j
 
-export HISTTIMEFORMAT="%F %T "
-PROMPT_COMMAND="run_on_prompt_command"
+if [ -f /usr/lib/git-core/git-sh-prompt ]; then
+  export GIT_PS1_SHOWDIRTYSTATE=1
+  source /usr/lib/git-core/git-sh-prompt
+else
+__git_ps1()
+{
+    return 0
+}
+fi
+
+export PS1="$BIYellow${debian_chroot:+<$debian_chroot> }"
+
+if [ "$(id -u)" -eq 0 ]; then
+  PS1+="$On_Red$BIYellow\u@\h$Color_Off:"
+  PS1+="$BBlue\w$Color_Off"
+  PS1+="$Green\$(__git_ps1 \" (%s)\")$Color_Off# "
+else
+  PS1+="$BRed\u@\h$Color_Off:"
+  PS1+="$BBlue\w$Color_Off"
+  PS1+="$Green\$(__git_ps1 \" (%s)\")$Color_Off\$ "
+fi
+
+bash_return_code()
+{
+	# http://david.newgas.net/return_code/
+	# run false then bash_return_code to see the error code
+	ret=$?; if [ $ret -ne 0 ] ; then echo -e "returned $(tput setaf 1)$ret$(tput sgr0)"; fi
+}
+
+alias persistent_history_note="history | tail -2 | head -1 | tr -s ' ' | cut -d' ' -f3- | awk '{print \"# \"\$0}' >> ~/.persistent_history_notes"
+
+# http://eli.thegreenplace.net/2013/06/11/keeping-persistent-history-in-bash/
+# to trim history: tail -20000 ~/.persistent_history | tee ~/.persistent_history
+log_bash_persistent_history()
+{
+  [[
+	$(history 1) =~ ^\ *[0-9]+\ +([^\ ]+\ [^\ ]+)\ +(.*)$
+  ]]
+  local date_part="${BASH_REMATCH[1]}"
+  local command_part="${BASH_REMATCH[2]}"
+  if [ "$command_part" != "$PERSISTENT_HISTORY_LAST" ]
+  then
+	echo $date_part "|" "$command_part" >> ~/.persistent_history
+	export PERSISTENT_HISTORY_LAST="$command_part"
+  fi
+}
+
+# Stuff to do on PROMPT_COMMAND
+run_on_prompt_command()
+{
+	log_bash_persistent_history
+}
+
+if [ -w ~/.persistent_history ]; then
+  export HISTTIMEFORMAT="%F %T "
+  # Bash shell executes the content of the PROMPT_COMMAND just before displaying the PS1 variable.
+  PROMPT_COMMAND="run_on_prompt_command"
+fi
 
 # add this configuration to ~/.bashrc
-export HH_CONFIG=hicolor         # get more colors
 shopt -s histappend              # append new history items to .bash_history
 export HISTCONTROL=ignoreboth    # ignore dupes and commands that start with a space
 export HISTFILESIZE=10000        # increase history file size (default is 500)
 export HISTSIZE=${HISTFILESIZE}  # increase history size (default is 500)
-# export PROMPT_COMMAND="history -a; history -n; ${PROMPT_COMMAND}"   # mem/file sync
-# if this is interactive shell, then bind hh to Ctrl-r (for Vi mode check doc)
-# if [[ $- =~ .*i.* ]]; then bind '"\C-r": "\C-a hh \C-j"'; fi
-export HH_ENV_VAR_HISTFILE=~/.persistent_history
-export HH_ENV_HISTORY_FILE_OFFSET=22
-
-# source /home/mikesart/dev/base16-shell-bash-colors/base16-shapeshifter.dark.sh
 
 if [ "$IN_SSH_SESSION" != "1" ]; then
   # kill the stop / start commands (see stty -a)
