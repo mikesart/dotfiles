@@ -17,6 +17,7 @@ mkdir -p ~/.config/htop
 
 copyit .bashrc
 copyit .bash_aliases
+copyit .inputrc
 copyit .vimrc
 copyit .gitconfig
 copyit .config/htop/htoprc

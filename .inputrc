@@ -1,0 +1,50 @@
+# Displays readline function names and bindings:
+#   bind -p
+#  http://www.gnu.org/software/bash/manual/bashref.html#Command-Line-Editing
+#  http://stackoverflow.com/questions/4009412/bash-how-to-use-arguments-from-previous-command
+#  http://jan.tomka.name/sites/default/files/readline-commands.html
+
+# http://hiltmon.com/blog/2013/03/12/better-bash-shell-expansion/
+
+$include /etc/inputrc
+
+set mark-symlinked-directories on
+
+set show-all-if-ambiguous on
+
+set completion-map-case on
+set completion-ignore-case on
+
+# Cycle through possibilities with <tab>
+TAB: menu-complete
+# Cycle back with SHIFT-TAB
+"\e[Z": "\e-1\C-i"
+
+# http://www.gnu.org/software/bash/manual/bashref.html#Command-Line-Editing
+# http://superuser.com/questions/488157/how-do-i-make-ctrl-arrow-keys-move-forward-backward-a-word-at-a-time-in-cygwin-b
+# The "official" key mappings are described in the Bash Reference Manual, but for a quick way to find a key mapping, in bash:
+#  - type Ctrl+V
+#  - type the key sequence you are interested in (e.g., Alt+→). This would print ^[[1;3C
+#  - remove the leading ^[ and replace it with \e to make \e[1;3C
+#  - place this value in your .inputrc file.
+# $if cgdb
+#"\ef": forward-word
+#"\eb": backward-word
+# $endif
+
+# "\C-[C": forward-word
+# "\C-[D": backward-word
+# "\C-0C": forward-word
+# "\C-0D": backward-word
+
+# http://brettterpstra.com/2011/09/25/quick-tip-some-inputrc-fun/
+"\C-w": unix-filename-rubout
+"": unix-word-rubout
+
+# If set to ‘on’, Readline attempts to bind the control characters treated specially by the kernel’s terminal driver to their Readline equivalents.
+set bind-tty-special-chars off
+
+set colored-stats on
+
+# Append file type when listing completions.
+set visible-stats on
