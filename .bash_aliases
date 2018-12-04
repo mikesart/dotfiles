@@ -20,7 +20,7 @@ export VISUAL=vi
 export EDITOR=vi
 
 export GREP_COLORS='ms=07;33:mc=07;33:sl=:cx=:fn=32:ln=33:bn=33:se=36'
-alias grep='grep --color=always
+alias grep='grep --color=always'
 
 export PS1='${debian_chroot:+($debian_chroot)}\[\033[01;31m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 
