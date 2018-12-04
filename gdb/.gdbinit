@@ -115,6 +115,8 @@ directory /home/mikesart/src/glibc-2.27/csu
 directory /home/mikesart/src/glibc-2.27/posix
 directory /home/mikesart/src/glibc-2.27/math
 
+directory /home/mikesart/src/vulkan-1.1.73+dfsg
+
 # Load color defines
 source ~/.gdbcolors
 
@@ -139,6 +141,7 @@ set history size 5000
 # use set substitute-path from to
 # '/foo/bar/bz.c' was moved to '/mnt/cross/baz.c', use
 # set substitute-path /foo/bar /mnt/cross
+set substitute-path /home/bschaefer /mnt/drive2/dev
 
 # use 'catch fork', 'catch vfork', 'catch exec' to break on these
 #  (also use 'catch load libname' or 'catch unload libname'
