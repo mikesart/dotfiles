@@ -1,6 +1,6 @@
 [user]
     name = Michael Sartain
-    email = mikesart@gmail.com
+    email = mikesart@fastmail.com
 
 [color]
     branch = auto
@@ -22,16 +22,19 @@
 [difftool "vimdiff"]
     cmd = /usr/bin/vimdiff \"$LOCAL\" \"$REMOTE\"
 
+[difftool "meld"]
+    cmd = /usr/bin/meld \"$LOCAL\" \"$REMOTE\"
+
 [alias]
-    lol = log --oneline --graph --decorate
-    ls = log --pretty=format:"%C(yellow)%h%C(green)%d\\ %Creset%s%C(yellow)\\ [%cn]" --decorate
-    ll = log --pretty=format:"%C(yellow)%h%C(green)%d\\ %Creset%s%C(yellow)\\ [%cn]" --decorate --numstat
-    lds = log --pretty=format:"%C(yellow)%h\\ %ad%C(green)%d\\ %Creset%s%C(yellow)\\ [%cn]" --decorate --date=short
-    ld = log --pretty=format:"%C(yellow)%h\\ %ad%C(green)%d\\ %Creset%s%C(yellow)\\ [%cn]" --decorate --date=relative
+    ls = log --all --pretty=format:'%C(yellow)%h %ad%C(green)%d %Creset%s%C(bold blue) [%an]%Creset' --decorate --graph --date=short
+    ls-stat = log --all --pretty=format:'%C(yellow)%h %ad%C(green)%d %Creset%s%C(yellow) [%an]%Creset' --decorate --graph --date=short --stat
+    ls-names = log --all --pretty=format:'%C(yellow)%h %ad%C(green)%d %Creset%s%C(yellow) [%an]%Creset' --decorate --graph --name-status --date=short
     filelog = log -u
     grep = grep -Ii
     cleanprojectfiles = clean -f -d --dry-run
+    cleanprojectfilesxxx = clean -f -d
     cleanignoredfiles = clean -X -f -d --dry-run
+    cleanignoredfilesxxx = clean -X -f -d
 
     ## http://durdn.com/blog/2012/11/22/must-have-git-aliases-advanced-examples/
     # Assume a file as unchanged
@@ -50,5 +53,10 @@
     up = "!git remote update -p; git merge --ff-only @{u}"
 
 [diff]
+    guidtool = meld
     tool = vimdiff
+
+# ~/.git-credentials
+[credential]
+    helper = store
 
