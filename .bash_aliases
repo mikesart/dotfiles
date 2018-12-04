@@ -1,4 +1,6 @@
 
+[[ -f ~/.bash_colors ]] && source ~/.bash_colors
+
 # SSH_CLIENT=192.168.1.xxx
 # SSH_CONNECTION=192.168.1.xxx
 # SSH_TTY=/dev/ttys021
