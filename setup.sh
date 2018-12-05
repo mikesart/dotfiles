@@ -1,30 +1,28 @@
 #!/bin/bash
 
-copyit()
+linkit()
 {
-    local FILE="$@"
+    local SRC=$(readlink -f $1)
+    local DST=${2:-~}/${SRC##*/}
 
-    if [[ -f ~/$FILE ]]; then
-        echo "~/$FILE (skipping)"
+    if [[ -f $DST ]]; then
+        echo "$DST exists: (skipping)"
     else
-        cp $FILE ~/$FILE
+        echo ln -s $SRC $DST
+        ln -s $SRC $DST
     fi
 }
 
-sudo apt-get -y install vim htop tree smem ncdu binutils
-
 mkdir -p ~/.config/htop
 
-copyit .bashrc
-copyit .bash_aliases
-copyit .bash_colors
-copyit .inputrc
-copyit .vimrc
-copyit .gitconfig
-copyit .config/htop/htoprc
+linkit .bashrc
+linkit .bash_aliases
+linkit .bash_colors
+linkit .inputrc
+linkit .vimrc
+linkit .gitconfig
+linkit htoprc ~/.config/htop
 
-pushd gdb
-copyit .gdbcolors
-copyit .gdbinit
-copyit .gdbinit.py
-popd
+linkit gdb/.gdbcolors
+linkit gdb/.gdbinit
+linkit gdb/.gdbinit.py
