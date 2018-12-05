@@ -1,4 +1,26 @@
 #! /bin/bash
+
+## 1. Build Mesa:
+##
+##    Set up debug and release build directories:
+##
+##    $ mkdir -p build/debug/install; CFLAGS='-g -O0' CXXFLAGS='-g -O0' meson --buildtype=debug --prefix=$PWD/build/debug/install -Ddri-drivers=i965 -Dgallium-drivers= -Dvulkan-drivers=intel -Dglvnd=true -Dtools=intel,nir,glsl,intel-ui build/debug
+##
+##    $ mkdir -p build/release/install; CFLAGS='-O3 -g -march=native -fno-omit-frame-pointer' CXXFLAGS='-O3 -g -fno-omit-frame-pointer -march=native' meson --buildtype=release --prefix=$PWD/build/release/install -Ddri-drivers=i965 -Dvulkan-drivers=intel -Dgallium-drivers= -Dglvnd=true -Db_ndebug=true build/release
+##
+##    Then run 'mesa-nj.sh debug' or 'mesa-nj.sh release' from anywhere in the
+##    Mesa source tree to build one version or the other.
+##
+## 2. Use the new Mesa:
+##
+##    We normally don't install development versions system-wide - we just
+##    launch particular apps with the driver.
+##
+##    $ mesa-with.sh debug glxinfo
+##
+##    will run the 'glxinfo' program with the Mesa in
+##    ~/src/mesa/build/debug/install.
+
 #
 # Copyright 2017 Kenneth Graunke <kenneth@whitecape.org>
 #
