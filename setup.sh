@@ -27,6 +27,6 @@ linkit gdb/.gdbcolors
 linkit gdb/.gdbinit
 linkit gdb/.gdbinit.py
 
-linkit bin/mesa-nj.sh ~/bin
+linkit bin/mesa-ninja.sh ~/bin
 linkit bin/mesa-with.sh ~/bin
 linkit bin/mnt-drive2.sh ~/bin
