@@ -21,6 +21,7 @@ linkit .bash_colors
 linkit .inputrc
 linkit .vimrc
 linkit .gitconfig
+linkit .drirc
 linkit htoprc ~/.config/htop
 
 linkit gdb/.gdbcolors

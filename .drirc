@@ -1,0 +1,11 @@
+<driconf>
+  <device screen="0" driver="i965">
+    <application name="Default">
+      <option name="disable_throttling" value="true" />
+      <option name="vblank_mode" value="0" />
+      <option name="xx-always_flush_batch" value="true" />
+      <option name="xx-always_flush_cache" value="true" />
+    </application>
+  </device>
+</driconf>
+
