@@ -30,4 +30,5 @@ linkit gdb/.gdbinit.py
 
 linkit bin/mesa-ninja.sh ~/bin
 linkit bin/mesa-with.sh ~/bin
+linkit bin/mesa-mk-build-dirs.sh ~/bin
 linkit bin/mnt-drive2.sh ~/bin
