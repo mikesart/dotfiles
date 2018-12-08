@@ -1,0 +1,34 @@
+set git-colors = no
+set show-changes = yes
+set commit-order = topo
+set refresh-mode = auto
+
+bind main I :toggle id
+bind main P :!/home/mikesart/bin/imgui_commit_to_gpuvis.sh %(commit)
+
+set main-view = \
+  date:custom \
+  author:abbreviated \
+  id:yes,color \
+  commit-title:graph=yes,refs=yes
+set vertical-split = horizontal
+
+# bind main R !git rebase -i %(commit)
+# bind main M !git merge --ff-only %(commit)
+
+bind status + !git commit -v
+bind status = !git commit –amend -
+
+bind main = !git commit –fixup=%(commit)
+bind main R !git rebase –autosquash -i %(commit)
+
+# man tigrc
+# color area fgcolor bgcolor [attributes]
+#   colors: white, black, green, magenta, blue, cyan, yellow, red, default.
+#   attributes: normal, blink, bold, dim, reverse, standout, and underline.
+
+# Look in include/tig/line.h for area names (DIFF_HEADER, etc)
+color date cyan default dim
+color diff-index cyan default
+color diff-stat cyan default
+color graph-commit cyan default

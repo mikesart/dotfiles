@@ -22,6 +22,7 @@ linkit .inputrc
 linkit .vimrc
 linkit .gitconfig
 linkit .drirc
+linkit .tigrc
 linkit htoprc ~/.config/htop
 
 linkit gdb/.gdbcolors
