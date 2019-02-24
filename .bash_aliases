@@ -23,6 +23,8 @@ export EDITOR=vi
 
 shopt -s cdable_vars
 
+setxkbmap -option "numpad:microsoft" &> /dev/null
+
 export GREP_COLORS='ms=07;33:mc=07;33:sl=:cx=:fn=32:ln=33:bn=33:se=36'
 alias grep='grep --color=always'
 
