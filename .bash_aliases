@@ -36,7 +36,7 @@ alias man="LESS_TERMCAP_mb=$'\E[01;31m' LESS_TERMCAP_md=$'\E[01;38;5;74m' LESS_T
 
 alias less="LESS_TERMCAP_mb=$'\E[01;31m' LESS_TERMCAP_md=$'\E[01;38;5;74m' LESS_TERMCAP_me=$'\E[0m' LESS_TERMCAP_se=$'\E[0m' LESS_TERMCAP_so=$'\E[48;5;3m\E[38;5;0m' LESS_TERMCAP_ue=$'\E[0m' LESS_TERMCAP_us=$'\E[04;38;5;146m' less"
 
-alias ll="ls -alF --group-directories-first --block-size=\'1"
+alias ll="ls -alF --color=always --group-directories-first --block-size=\'1"
 
 # remove ls quotes around files with spaces
 # https://unix.stackexchange.com/questions/258679/why-is-ls-suddenly-wrapping-items-with-spaces-in-single-quotes
