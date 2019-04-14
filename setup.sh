@@ -13,16 +13,21 @@ linkit()
     fi
 }
 
-mkdir -p ~/.config/htop
+unamestr=$(uname -m)
 
 linkit .bashrc
 linkit .bash_aliases
 linkit .bash_colors
 linkit .inputrc
-linkit .vimrc
 linkit .gitconfig
 linkit .drirc
 linkit .tigrc
+
+if [[ "$unamestr" == 'x86_64' ]]; then
+
+linkit .vimrc
+
+mkdir -p ~/.config/htop
 linkit htoprc ~/.config/htop
 
 linkit gdb/.gdbcolors
@@ -33,3 +38,5 @@ linkit bin/mesa-ninja.sh ~/bin
 linkit bin/mesa-with.sh ~/bin
 linkit bin/mesa-mk-build-dirs.sh ~/bin
 linkit bin/mnt-drive2.sh ~/bin
+
+fi
