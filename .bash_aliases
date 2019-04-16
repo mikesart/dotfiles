@@ -62,7 +62,7 @@ alias tree_nogit="tree -aCFl --charset=UTF8 --du -h -I '.git'"
 # hexdump -C ...
 alias hd='od -Ax -tx1z -v'
 
-alias dfc='dfc -Tadso'
+alias dfc='dfc -Tds'
 
 # Will show 0644 or 0755 type perms for specified files
 alias stat_perm="stat -c '%n %U:%G-%a'"

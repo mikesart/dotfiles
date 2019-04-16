@@ -15,6 +15,8 @@ linkit()
 
 unamestr=$(uname -m)
 
+touch ~/.persistent_history
+
 linkit .bashrc
 linkit .bash_aliases
 linkit .bash_colors
@@ -23,16 +25,17 @@ linkit .gitconfig
 linkit .drirc
 linkit .tigrc
 
+linkit gdb/.gdbcolors
+linkit gdb/.gdbinit
+linkit gdb/.gdbinit.py
+
+
 if [[ "$unamestr" == 'x86_64' ]]; then
 
 linkit .vimrc
 
 mkdir -p ~/.config/htop
 linkit htoprc ~/.config/htop
-
-linkit gdb/.gdbcolors
-linkit gdb/.gdbinit
-linkit gdb/.gdbinit.py
 
 linkit bin/mesa-ninja.sh ~/bin
 linkit bin/mesa-with.sh ~/bin
