@@ -6,6 +6,9 @@
 #   print("Registered pretty printers for UE4 classes")
 #   end
 
+# https://github.com/gdbinit/Gdbinit/blob/master/gdbinit
+set $ARM = 0
+
 # set debug auto-load on
 # or add this to command line: -iex "set debug auto-load on"
 
@@ -102,27 +105,28 @@ set auto-load safe-path /
 # don't do the 'type <return> to continue thing'
 set pagination off
 
-# /home/mikesart/src/eglibc-2.15/sysdeps/i386/i686/multiarch/memcpy-ssse3-rep.S
-# searching in ../sysdeps/i386/i686/multiarch/...
-directory /home/mikesart/src/glibc-2.27/sysdeps
-directory /home/mikesart/src/glibc-2.27/libio
-directory /home/mikesart/src/glibc-2.27/elf
-directory /home/mikesart/src/glibc-2.27/malloc
-directory /home/mikesart/src/glibc-2.27/stdio-common
-directory /home/mikesart/src/glibc-2.27/nss
-directory /home/mikesart/src/glibc-2.27/stdlib
-directory /home/mikesart/src/glibc-2.27/csu
-directory /home/mikesart/src/glibc-2.27/posix
-directory /home/mikesart/src/glibc-2.27/math
-
-directory /home/mikesart/src/vulkan-1.1.73+dfsg
+if $ARM == 0
+  # /home/mikesart/src/eglibc-2.15/sysdeps/i386/i686/multiarch/memcpy-ssse3-rep.S
+  # searching in ../sysdeps/i386/i686/multiarch/...
+  directory /home/mikesart/src/glibc-2.28/sysdeps
+  directory /home/mikesart/src/glibc-2.28/libio
+  directory /home/mikesart/src/glibc-2.28/elf
+  directory /home/mikesart/src/glibc-2.28/malloc
+  directory /home/mikesart/src/glibc-2.28/stdio-common
+  directory /home/mikesart/src/glibc-2.28/nss
+  directory /home/mikesart/src/glibc-2.28/stdlib
+  directory /home/mikesart/src/glibc-2.28/csu
+  directory /home/mikesart/src/glibc-2.28/posix
+  directory /home/mikesart/src/glibc-2.28/math
+  directory /home/mikesart/src/glibc-2.28/locale
+end
 
 # Load color defines
 source ~/.gdbcolors
 
 echo \n
-skip -gfile /usr/include/c++/6/*
-skip -gfile /usr/include/c++/6/bits/*
+skip -gfile /usr/include/c++/8/*
+skip -gfile /usr/include/c++/8/bits/*
 
 # RL_PROMPT_START_IGNORE is \001 in readline/readline.h, etc.
 # set prompt \001\033[0;1;33m\002(gdb) \001\033[0m\002
@@ -141,7 +145,6 @@ set history size 5000
 # use set substitute-path from to
 # '/foo/bar/bz.c' was moved to '/mnt/cross/baz.c', use
 # set substitute-path /foo/bar /mnt/cross
-set substitute-path /home/bschaefer /mnt/drive2/dev
 
 # use 'catch fork', 'catch vfork', 'catch exec' to break on these
 #  (also use 'catch load libname' or 'catch unload libname'
@@ -186,7 +189,10 @@ set print array on
 # Pretty print C++ virtual function tables.
 set print vtbl on
 
-set disassembly-flavor intel
+if $ARM == 0
+  set disassembly-flavor intel
+end
+
 set breakpoint pending on
 
 # "p/a ptr" should now print source file location of ptr variable.
@@ -201,7 +207,7 @@ set print elements 1024
 # Set threshold for repeated print elements
 set print repeats 0
 # Cause GDB to stop printing the characters of an array when the first NULL is encountered.
-# This is useful when large arrays actually contain only short strings. 
+# This is useful when large arrays actually contain only short strings.
 set print null-stop
 
 define bt_args_on

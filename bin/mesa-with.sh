@@ -1,22 +1,23 @@
 #! /bin/bash
 
-ARG1=${1:---status}
+ARG1=${1:---blah}
 
 if [[ $ARG1 == "debug" ]] || [[ $ARG1 == "release" ]] ; then
     echo "Running $ARG1..."
+    shift
 else
-    echo "Usage: mesa-with.sh [release|debug] [application]"
-    exit 1
+    ARG1=release
+    #echo "Usage: mesa-with.sh [release|debug] [application]"
+    #exit 1
 fi
 
-MESAROOT="/home/mikesart/dev/mesa.git/build/$1/install"
+MESAROOT="/home/mikesart/dev/mesa.git/build/${ARG1}/install"
 
 if [[ ! -d "$MESAROOT/lib" ]] ; then
     echo "Error: directory not found $MESAROOT"
     exit 1
 fi
 
-shift
 export LD_LIBRARY_PATH="$MESAROOT/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
 
 if lsmod | grep -q 'amdgpu'; then
@@ -26,6 +27,8 @@ else
 fi
 
 export LIBGL_DRIVERS_PATH="$MESAROOT/lib/x86_64-linux-gnu/dri"
+
+# RADV_PERFTEST=aco
 
 echo "LD_LIBRARY_PATH:    $LD_LIBRARY_PATH"
 echo "VK_ICD_FILENAMES:   $VK_ICD_FILENAMES"

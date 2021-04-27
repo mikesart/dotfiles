@@ -28,14 +28,18 @@ setxkbmap -option "numpad:microsoft" &> /dev/null
 unamestr=$(uname -m)
 
 if [[ "$unamestr" == 'aarch64' ]]; then
-export WAYLAND_DISPLAY=wayland-0
+  export WAYLAND_DISPLAY=wayland-0
 
-# https://vulkan.lunarg.com/doc/view/1.0.13.0/windows/layers.html
-VK_INSTANCE_LAYERS="VK_LAYER_LUNARG_parameter_validation"
-VK_INSTANCE_LAYERS+=":VK_LAYER_LUNARG_object_tracker"
-VK_INSTANCE_LAYERS+=":VK_LAYER_LUNARG_core_validation"
-VK_INSTANCE_LAYERS+=":VK_LAYER_GOOGLE_unique_objects"
-export VK_INSTANCE_LAYERS
+  # https://vulkan.lunarg.com/doc/view/1.0.13.0/windows/layers.html
+  VK_INSTANCE_LAYERS="VK_LAYER_LUNARG_parameter_validation"
+  VK_INSTANCE_LAYERS+=":VK_LAYER_LUNARG_object_tracker"
+  VK_INSTANCE_LAYERS+=":VK_LAYER_LUNARG_core_validation"
+  VK_INSTANCE_LAYERS+=":VK_LAYER_GOOGLE_unique_objects"
+  export VK_INSTANCE_LAYERS
+
+  ## export WAYLAND_DISPLAY=wayland-0
+  ## export WAYLAND_DEBUG=1
+  ## export VIV_TRACE=1
 fi
 
 export GREP_COLORS='ms=07;33:mc=07;33:sl=:cx=:fn=32:ln=33:bn=33:se=36'

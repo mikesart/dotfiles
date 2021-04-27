@@ -34,6 +34,11 @@ ARGS_DBG+='--prefix=$PWD/build/debug/install '
 ARGS_DBG+='-Dc_args="-g -O0" '
 ARGS_DBG+='-Dcpp_args="-g -O0" '
 
+if [ -f /usr/bin/clang-10 ]; then
+    export CC=clang-10
+    export CXX=clang++-10
+fi
+
 if lsmod | grep -q 'amdgpu'; then
 
 echo Creating amdgpu $PWD/build dirs
