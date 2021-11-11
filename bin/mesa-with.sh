@@ -11,7 +11,13 @@ else
     #exit 1
 fi
 
-MESAROOT="/home/mikesart/dev/mesa.git/build/${ARG1}/install"
+if [[ -z "${MESAROOTDIR-}" ]]; then
+    echo "ERROR: MESAROOTDIR not set. Please set your mesa git repository. Ie:"
+    echo "  export MESAROOTDIR=/home/mikesart/dev/mesa.git"
+    exit 1
+fi
+
+MESAROOT="${MESAROOTDIR}/build/${ARG1}/install"
 
 if [[ ! -d "$MESAROOT/lib" ]] ; then
     echo "Error: directory not found $MESAROOT"
