@@ -25,21 +25,7 @@ linkit .gitconfig
 linkit .drirc
 linkit .tigrc
 
-linkit gdb/.gdbcolors
 linkit gdb/.gdbinit
 linkit gdb/.gdbinit.py
 
-
-if [[ "$unamestr" == 'x86_64' ]]; then
-
 linkit .vimrc
-
-mkdir -p ~/.config/htop
-linkit htoprc ~/.config/htop
-
-linkit bin/mesa-ninja.sh ~/bin
-linkit bin/mesa-with.sh ~/bin
-linkit bin/mesa-mk-build-dirs.sh ~/bin
-linkit bin/mnt-drive2.sh ~/bin
-
-fi

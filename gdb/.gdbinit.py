@@ -1,15 +1,83 @@
 # source ~/.gdbinit.py
 
+# An introduction to GDB scripting in Python
+#   https://blog.vmsplice.net/2020/02/an-introduction-to-gdb-scripting-in.html
+
 import os
 import re
 import time
 import gdb
+import sys
+import platform
+
+class bcolors:
+    ENDC     = "\033[0m"
+    BLACK    = "\033[30m"
+    RED      = "\033[31m"
+    GREEN    = "\033[32m"
+    YELLOW   = "\033[33m"
+    BLUE     = "\033[34m"
+    MAGENTA  = "\033[35m"
+    CYAN     = "\033[36m"
+    WHITE    = "\033[37m"
+    BBLACK   = "\033[1;30m"
+    BRED     = "\033[1;31m"
+    BGREEN   = "\033[1;32m"
+    BYELLOW  = "\033[1;33m"
+    BBLUE    = "\033[1;34m"
+    BMAGENTA = "\033[1;35m"
+    BCYAN    = "\033[1;36m"
+    BWHITE   = "\033[1;37m"
+
+# ue4printersfile = os.path.expanduser("/epic/p4/UE4/Release-4.25/Engine/Extras/GDBPrinters/UE4Printers.py")
+# if (os.path.isfile(ue4printersfile)):
+#     gdb.execute("source " + ue4printersfile, True, False)
+#     register_ue4_printers(None)
+#     print("\nRegistered UE4 pretty printers:", ue4printersfile, "\n")
 
 # python help(gdb.prompt)
 
+# https://sourceware.org/gdb/current/onlinedocs/gdb/Convenience-Vars.html#Convenience-Vars
+#   gdb.convenience_variable("GDB_VERSION")
+#   gdb.set_convenience_variable(name, value)
+
 # http://stackoverflow.com/questions/9233095/memory-dump-formatted-like-xxd-from-gdb/9234007#9234007
 
-def print_color_table():
+## pframefile = os.path.expanduser("~/.gdb-stackframe.py")
+## if (os.path.isfile(pframefile)):
+##     gdb.execute("source " + pframefile, True, False)
+
+# sys.platform == 'linux'
+### platform_machine = platform.machine()
+### print("Platform machine: %s" % platform_machine)
+
+#if (platform_machine == "x86_64"):
+#    # https://github.com/gdbinit/Gdbinit/blob/master/gdbinit
+#    gdb.execute("set disassembly-flavor intel", True, False)
+
+# https://stackoverflow.com/questions/23150124/gdb-how-to-change-a-convenience-variable-from-a-built-in-python
+#   class my_own_len (gdb.Function):
+#      def __init__ (self):
+#        super (my_own_len, self).__init__ ("my_own_len")
+#
+#      def invoke (self, arg):
+#         res=len(arg.string())
+#         gdb.execute( "set $Retrn=" + str(res))
+#         return res
+#
+#   my_own_len()
+#
+#   (gdb) p $_strlen("test")
+#   $1 = 4
+#   (gdb) p $my_own_len("test")
+#   $2 = 4
+#   (gdb) p $Retrn
+#   $3 = 4
+#   (gdb)
+
+# Use:
+#   python print_color_table_func()
+def print_color_table_func():
     """
     prints table of formatted text format options
     """
@@ -22,35 +90,39 @@ def print_color_table():
             print(s1)
         print('\n')
 
-class bcolors:
-    CYAN = '\033[36m'
-    ENDC = '\033[0m'
+class print_color_table(gdb.Command):
+    """Print ansi color table"""
+    def __init__(self):
+        gdb.Command.__init__ (self, "print_color_table", gdb.COMMAND_USER, gdb.COMPLETE_COMMAND)
+    def invoke (self, arg, from_tty):
+        print_color_table_func()
+print_color_table()
 
 # https://fossies.org/dox/gdb-7.12/classgdb_1_1printing_1_1RegexpCollectionPrettyPrinter.html
 # https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Developer_Guide/debuggingprettyprinters.html
 # https://gcc.gnu.org/git/?p=gcc.git;a=blob_plain;f=libstdc%2b%2b-v3/python/libstdcxx/v6/printers.py;hb=HEAD
 # https://github.com/ruediger/Boost-Pretty-Printer/blob/master/boost/printers.py
 # https://sourceware.org/gdb/onlinedocs/gdb/Pretty_002dPrinter-Introduction.html#Pretty_002dPrinter-Introduction
-class git_oidPrinter:
-    def __init__(self, val):
-        self.val = val
-
-    def to_string (self):
-        u = (self.val['id'][i] for i in range(20))
-        s = 'xxxx_xxxxxxxxxxxxxxxx'.replace('x', '%02x') % tuple(u)
-        return '(%s) %s' % ("git_oid", s)
-
-def git_oid_pp(val):
-    if str(val.type) == 'const git_oid':
-        return git_oidPrinter(val)
-    if str(val.type) == 'git_oid':
-        return git_oidPrinter(val)
-    return None
-
-# info pretty-printer global git_oid_pp
-# disable pretty-printer global git_oid_pp
-# enable pretty-printer global git_oid_pp
-gdb.pretty_printers.append(git_oid_pp)
+### class git_oidPrinter:
+###     def __init__(self, val):
+###         self.val = val
+###
+###     def to_string (self):
+###         u = (self.val['id'][i] for i in range(20))
+###         s = 'xxxx_xxxxxxxxxxxxxxxx'.replace('x', '%02x') % tuple(u)
+###         return '(%s) %s' % ("git_oid", s)
+###
+### def git_oid_pp(val):
+###     if str(val.type) == 'const git_oid':
+###         return git_oidPrinter(val)
+###     if str(val.type) == 'git_oid':
+###         return git_oidPrinter(val)
+###     return None
+###
+### # info pretty-printer global git_oid_pp
+### # disable pretty-printer global git_oid_pp
+### # enable pretty-printer global git_oid_pp
+### gdb.pretty_printers.append(git_oid_pp)
 
 # shortcut commands:
 # https://blog.0x972.info/?d=2014/12/04/09/25/38-dev-tools-configuration-gdbs-gdbinit
@@ -96,23 +168,37 @@ class XdgOpen(gdb.Command):
         super (XdgOpen, self).__init__ ("xdg-open", gdb.COMMAND_USER, gdb.COMPLETE_COMMAND)
 
     def invoke(self, arg, from_tty):
-        print("Executing '%s'" % arg)
-
-        str = gdb.execute("%s" % arg, False, True)
-
-        str = re.sub( r"\n\x1a\x1avalue-history-value\n", "", str );
-        str = re.sub( r"\n\x1a\x1avalue-history-value\n", "", str );
-        str = re.sub( r"\n\x1a\x1avalue-history-begin \d+ [\*|\-]\n", "", str );
-        str = re.sub( r"\n\x1a\x1afield-begin [\*|\-]\n", "", str );
-        str = re.sub( r"\n\x1a\x1afield-name-end\n", "", str );
-        str = re.sub( r"\n\x1a\x1afield-value\n", "", str );
-        str = re.sub( r"\n\x1a\x1afield-end\n", "", str );
-        str = re.sub( r"\n\x1a\x1aarray-section-begin \d+ [\*|\-]\n", "", str );
-        str = re.sub( r"\n\x1a\x1aarray-section-end\n", "", str );
-        str = re.sub( r"\n\x1a\x1aelt\n", "", str );
-        str = re.sub( r"\n\x1a\x1aelt-rep \d+\n", "", str );
-        str = re.sub( r"\n\x1a\x1aelt-rep-end\n", "", str );
-        str = re.sub( r"\n\x1a\x1avalue-history-end", "", str );
+        if arg == "bt":
+            print("Executing 'backtrace no-filters'")
+            str = gdb.execute("set print frame-arguments none")
+            str = gdb.execute("set filename-display relative")
+            str = gdb.execute("backtrace no-filters", False, True)
+            str = re.sub( r"\n\x1a\x1aframe-begin", "", str );
+            str = re.sub( r"\n\x1a\x1aframe-address-end", "", str );
+            str = re.sub( r"\n\x1a\x1aframe-address", "", str );
+            str = re.sub( r"\n\x1a\x1aframe-function-name", "", str );
+            str = re.sub( r"\n\x1a\x1aframe-source-begin", "", str );
+            str = re.sub( r"\n\x1a\x1aframe-source-file-end", "", str );
+            str = re.sub( r"\n\x1a\x1aframe-source-file", "", str );
+            str = re.sub( r"\n\x1a\x1aframe-source-line", "", str );
+            str = re.sub( r"\n\x1a\x1aframe-end", "", str );
+            str = re.sub( r"\n\x1a\x1aframe-args", "", str );
+        else:
+            print("Executing '%s'" % arg)
+            str = gdb.execute("%s" % arg, False, True)
+            str = re.sub( r"\n\x1a\x1avalue-history-value\n", "", str );
+            str = re.sub( r"\n\x1a\x1avalue-history-value\n", "", str );
+            str = re.sub( r"\n\x1a\x1avalue-history-begin \d+ [\*|\-]\n", "", str );
+            str = re.sub( r"\n\x1a\x1afield-begin [\*|\-]\n", "", str );
+            str = re.sub( r"\n\x1a\x1afield-name-end\n", "", str );
+            str = re.sub( r"\n\x1a\x1afield-value\n", "", str );
+            str = re.sub( r"\n\x1a\x1afield-end\n", "", str );
+            str = re.sub( r"\n\x1a\x1aarray-section-begin \d+ [\*|\-]\n", "", str );
+            str = re.sub( r"\n\x1a\x1aarray-section-end\n", "", str );
+            str = re.sub( r"\n\x1a\x1aelt\n", "", str );
+            str = re.sub( r"\n\x1a\x1aelt-rep \d+\n", "", str );
+            str = re.sub( r"\n\x1a\x1aelt-rep-end\n", "", str );
+            str = re.sub( r"\n\x1a\x1avalue-history-end", "", str );
 
         filename = "/tmp/gdb.%s.txt" % os.getpid()
         with open(filename, "a") as text_file:
@@ -185,153 +271,6 @@ class Hierarchy(gdb.Command):
 
 Hierarchy()
 
-from gdb.FrameDecorator import FrameDecorator
-
-_colors = ["none", "black", "red", "green", "yellow", "blue", "magenta",
-           "cyan", "white"]
-
-class _Prefix(gdb.Command):
-    """Generic command for modifying backtrace color settings."""
-
-    def __init__(self, setorshow, name):
-        super(_Prefix, self).__init__(setorshow + " backtrace " + name,
-                                      gdb.COMMAND_NONE, prefix = True)
-
-_Prefix("set", "filename")
-_Prefix("set", "function")
-_Prefix("set", "argument")
-_Prefix("show", "filename")
-_Prefix("show", "function")
-_Prefix("show", "argument")
-
-class _ColorParameter(gdb.Parameter):
-    def __init__(self, item, attribute, values):
-        self.set_doc = "Set the %s %s" % (item, attribute)
-        self.show_doc = "Show the %s %s" % (item, attribute)
-        self.item = item
-        self.attribute = attribute
-        super(_ColorParameter, self).__init__("backtrace " + item + " "
-                                              + attribute,
-                                              gdb.COMMAND_NONE,
-                                              gdb.PARAM_ENUM,
-                                              values)
-        self.value = values[0]
-
-    def get_show_string(self, pvalue):
-        return "The current %s %s is: %s" % (self.item, self.attribute,
-                                             self.value)
-
-    def get_set_string(self):
-        return ""
-
-class _Item(object):
-    def __init__(self, name):
-        self.bold = _ColorParameter(name, "intensity",
-                                    ["normal", "bold", "faint"])
-        self.foreground = _ColorParameter(name, "foreground", _colors)
-        self.background = _ColorParameter(name, "background", _colors)
-
-    def get_escape(self):
-        result = []
-        if self.bold.value == "bold":
-            result.append("1")
-        elif self.bold.value == "faint":
-            result.append("2")
-        if self.foreground.value != "none":
-            result.append("3" + str(_colors.index(self.foreground.value) - 1))
-        if self.background.value != "none":
-            result.append("4" + str(_colors.index(self.background.value) - 1))
-        if len(result) == 0:
-            return None
-        return "\x1b[" + ";".join(result) + "m"
-
-filename_item = _Item("filename")
-function_item = _Item("function")
-arg_item = _Item("argument")
-
-def colorize(item, text):
-    if type(text) != str:
-        return text
-    esc = item.get_escape()
-    if esc is None:
-        return text
-    return esc + str(text) + "\x1b[m"
-
-class SymbolWrapper(object):
-    def __init__(self, frame, symval):
-        self.symval = symval
-        self.frame = frame
-
-    def value(self):
-        value = self.symval.value()
-        if value != None:
-            return value
-        sym = self.symval.symbol()
-        return sym.value(self.frame)
-
-    def symbol(self):
-        sym = self.symval.symbol()
-        if type(sym) == str:
-            text = sym
-        elif type(sym) == gdb.Symbol:
-            text = sym.print_name
-        else:
-            return sym
-        return colorize(arg_item, text)
-
-class ColorDecorator(FrameDecorator):
-    def __init__(self, fobj):
-        super(ColorDecorator, self).__init__(fobj)
-        self._fobj = fobj
-
-    def function(self):
-        if self._fobj.function() is None:
-            return None
-        return colorize(function_item, self._fobj.function())
-
-    def filename(self):
-        arg = self._fobj.filename()
-        if arg is None:
-            arg = ""
-        solib = gdb.solib_name(self._fobj.address())
-        if solib:
-            solib = " (" + colorize(function_item, os.path.basename(solib)) + ")"
-        else:
-            solib = ""
-        if not arg and not solib:
-            return None
-        return colorize(filename_item, arg) + solib
-
-    def wrap_symbol(self, symval):
-        return SymbolWrapper(self.inferior_frame(), symval)
-
-    def frame_args(self):
-        args = self._fobj.frame_args()
-        if args is None:
-            return None
-        if gdb.parameter("print frame-arguments") == "none":
-            return None
-        return map(self.wrap_symbol, args)
-
-class ColorFilter(object):
-    def __init__(self):
-        self.name = "colorize"
-        # Give this a low priority so it runs last.
-        self.priority = 0
-        self.enabled = True
-        gdb.frame_filters[self.name] = self
-
-    def filter(self, frame_iter):
-        return map(ColorDecorator, frame_iter)
-
-ColorFilter()
-
-# Defaults.
-gdb.execute("set backtrace argument foreground red", to_string = True)
-gdb.execute("set backtrace function foreground blue", to_string = True)
-gdb.execute("set backtrace function intensity bold", to_string = True)
-gdb.execute("set backtrace filename foreground cyan", to_string = True)
-
 # https://sourceware.org/gdb/onlinedocs/gdb/Breakpoints-In-Python.html#Breakpoints-In-Python
 class bpcontainer:
     def __init__(self, bp):
@@ -370,7 +309,7 @@ class bprune(gdb.Command):
         gdb.Command.__init__ (self, "bprune", gdb.COMMAND_USER)
 
     def invoke(self, arg, from_tty):
-        bplist = [] 
+        bplist = []
         bpdupes = []
 
         quiet = (arg == "--quiet")
@@ -456,14 +395,27 @@ class bpload(gdb.Command):
 bpload()
 
 def main():
+    # Set dir search list
+    glibcsrc = os.path.expanduser("~/src/glibc-2.31")
+    if (os.path.isdir(glibcsrc)):
+        gdb.execute("directory " + glibcsrc + "/sysdeps")
+        gdb.execute("directory " + glibcsrc + "/libio")
+        gdb.execute("directory " + glibcsrc + "/elf")
+        gdb.execute("directory " + glibcsrc + "/malloc")
+        gdb.execute("directory " + glibcsrc + "/stdio-common")
+        gdb.execute("directory " + glibcsrc + "/nss")
+        gdb.execute("directory " + glibcsrc + "/stdlib")
+        gdb.execute("directory " + glibcsrc + "/csu")
+        gdb.execute("directory " + glibcsrc + "/posix")
+        gdb.execute("directory " + glibcsrc + "/math")
+        gdb.execute("directory " + glibcsrc + "/locale")
+        print()
+
     # Show source dir search list
     dirlist = gdb.execute("show directories", to_string = True).split(":")
     for dir in dirlist:
         print( bcolors.CYAN + dir.strip() + bcolors.ENDC )
     print()
-
-    # Default to not showing frame arguments (too verbose)
-    gdb.execute("bt_args_off")
 
 if __name__ == "__main__":
     main()

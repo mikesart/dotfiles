@@ -48,3 +48,6 @@ set colored-stats on
 
 # Append file type when listing completions.
 set visible-stats on
+
+# https://github.com/cgdb/cgdb/issues/189
+set enable-bracketed-paste off

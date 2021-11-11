@@ -1,20 +1,16 @@
-# Unreal:
-#   import sys
-#   sys.path.append('/home/mikesart/.config/Epic/GDBPrinters/')
-#   from UE4Printers import register_ue4_printers
-#   register_ue4_printers(None)
-#   print("Registered pretty printers for UE4 classes")
-#   end
-
-# https://github.com/gdbinit/Gdbinit/blob/master/gdbinit
-set $ARM = 0
-
-# set debug auto-load on
-# or add this to command line: -iex "set debug auto-load on"
-
 #
 # .gdbinit
 #
+
+# https://lists.gnu.org/archive/html/info-gnu/2020-02/msg00008.html
+# https://gcc.gnu.org/wiki/DebugFission
+# https://reviews.llvm.org/D24267
+# https://gcc.gnu.org/onlinedocs/gcc/Debugging-Options.html
+# https://sourceware.org/gdb/wiki/How gdb loads symbol files
+# https://chromium.googlesource.com/chromium/src/build/config/+/refs/heads/master/compiler/BUILD.gn
+
+# set debug auto-load on
+# or add this to command line: -iex "set debug auto-load on"
 
 # Debugging with GDB:
 #  https://sourceware.org/gdb/onlinedocs/gdb/index.html#SEC_Contents
@@ -23,14 +19,22 @@ set $ARM = 0
 # info vtbl
 # info address
 # info symbol
+# info target
+# info frame 1 ; show info about frame: https://siddhesh.in/posts/viewing-signal-numbers-in-gdb.html
+# show osabi
 # explore value
 # explore type
 # dprintf
 # typeid operator
 # $_exitsignal
 # $_memeq, $_streq, $_strlen, $_regex
+
 # python help (gdb)
+
 # show convenience ; list defined convenience variables
+
+# https://github.com/phcerdan/Gdbinit/blob/master/.gdb/setup.gdb
+# https://github.com/Gr3yR0n1n/dotgdb/blob/master/.gdb/detect-target.sh
 
 # Set overload resolution in evaluating C++ functions
 # set overload-resolution [on|off]
@@ -77,7 +81,7 @@ set $ARM = 0
 
 # info file shows Entry point of debuggee. Useful for debugging w/o symbols.
 
-# command line arguments
+# command line (cmdline) arguments
 # Show argument list to give program being debugged when it is started.
 #   help show args
 
@@ -87,10 +91,58 @@ set $ARM = 0
 # For printing non-pretty printed objects, use /r (raw). Ie:
 #   p /r foo
 
+# x/30zg
+#   x: hex int
+#   z: zero padded 'x'
+#   d: signed decimal
+#   u: unsigned decimal
+#   t: binary (t for two)
+#   c: char
+#   f: float
+#   s: string
+#   r: raw
+#     b: bytes
+#     h: halfwords (two bytes)
+#     w: words (four bytes)
+#     g: giant words (eight bytes)
+
+# print utf-16, utf-32 string
+#   print (wchar_t *)$rax
+#   x /sh $rax
+
 # https://ascending.wordpress.com/2007/09/02/a-couple-of-gdb-tricks/
 #   set auto-solib-add off
 #   shar libc ; load libc symbols
 #   info sharedlibrary ; see what symbols are loaded
+
+# Color convenience vars
+set $ENDC     = "\033[0m"
+set $BLACK    = "\033[30m"
+set $RED      = "\033[31m"
+set $GREEN    = "\033[32m"
+set $YELLOW   = "\033[33m"
+set $BLUE     = "\033[34m"
+set $MAGENTA  = "\033[35m"
+set $CYAN     = "\033[36m"
+set $WHITE    = "\033[37m"
+set $BBLACK   = "\033[1;30m"
+set $BRED     = "\033[1;31m"
+set $BGREEN   = "\033[1;32m"
+set $BYELLOW  = "\033[1;33m"
+set $BBLUE    = "\033[1;34m"
+set $BMAGENTA = "\033[1;35m"
+set $BCYAN    = "\033[1;36m"
+set $BWHITE   = "\033[1;37m"
+
+# _gdb_major added to GDB 9
+#   init-if-undefined $_gdb_major = 7
+py import os
+py gdb.execute("set $GDB_VERSION_STR = \"" +  gdb.VERSION + "\"")
+py gdb.execute("set $GDB_VERSION = " + gdb.VERSION.partition(".")[0])
+py gdb.execute("set $GDB_IS_X64 = " + ("0" if "aarch" in gdb.TARGET_CONFIG else "1"))
+py gdb.execute("set $GDB_IS_TERMDEBUG = " + ("1" if os.environ.get("VIMRUNTIME") else "0"))
+
+printf "\nGDB_VERSION:%d GDB_IS_X64:%d\n", $GDB_VERSION, $GDB_IS_X64
 
 # add-auto-load-safe-path /lib/i386-linux-gnu/libthread_db-1.0.so
 set auto-load safe-path /
@@ -99,48 +151,61 @@ set auto-load safe-path /
 # p /a (*(void ***)obj)[0]@10
 # info vtbl obj
 
+# print array
+#  (gdb) p *values@6
+#  $2 = {4, 8, 15, 16, 23, 42}
+
 # set disassemble-next-line on
-#   do a "display /5i $eip" or "display /5i $eip" instead
+#   do a "display /5i $eip" or "display /5i $pc"
 
 # don't do the 'type <return> to continue thing'
 set pagination off
 
-if $ARM == 0
-  # /home/mikesart/src/eglibc-2.15/sysdeps/i386/i686/multiarch/memcpy-ssse3-rep.S
-  # searching in ../sysdeps/i386/i686/multiarch/...
-  directory /home/mikesart/src/glibc-2.28/sysdeps
-  directory /home/mikesart/src/glibc-2.28/libio
-  directory /home/mikesart/src/glibc-2.28/elf
-  directory /home/mikesart/src/glibc-2.28/malloc
-  directory /home/mikesart/src/glibc-2.28/stdio-common
-  directory /home/mikesart/src/glibc-2.28/nss
-  directory /home/mikesart/src/glibc-2.28/stdlib
-  directory /home/mikesart/src/glibc-2.28/csu
-  directory /home/mikesart/src/glibc-2.28/posix
-  directory /home/mikesart/src/glibc-2.28/math
-  directory /home/mikesart/src/glibc-2.28/locale
+if $GDB_VERSION >= 10
+    # https://sourceware.org/gdb/current/onlinedocs/gdb/Output-Styling.html
+    #  show style
+    set style address foreground magenta
+    set style file foreground cyan
+    set style function foreground yellow
+    set style function intensity bold
 end
-
-# Load color defines
-source ~/.gdbcolors
 
 echo \n
 skip -gfile /usr/include/c++/8/*
 skip -gfile /usr/include/c++/8/bits/*
+skip -gfile /usr/include/c++/9/*
+skip -gfile /usr/include/c++/9/bits/*
+skip -gfile /usr/include/c++/10/*
+skip -gfile /usr/include/c++/10/bits/*
 
 # RL_PROMPT_START_IGNORE is \001 in readline/readline.h, etc.
 # set prompt \001\033[0;1;33m\002(gdb) \001\033[0m\002
-
-# https://sourceware.org/gdb/onlinedocs/gdb/Frames-In-Python.html
-set extended-prompt \[\e[0;1;33m\](gdb \v: \f{name}) \[\e[0m\]
+if $GDB_IS_TERMDEBUG == 0
+    if $GDB_VERSION >= 10
+        # https://sourceware.org/gdb/onlinedocs/gdb/Frames-In-Python.html
+        set extended-prompt \[\e[0;1;33m\](gdb \v: \f{name}) \[\e[0m\]
+    else
+        set prompt \001\033[1;33m\002(gdb) \001\033[0m\002
+    end
+end
 
 set debug-file-directory /usr/lib/debug
 # set debug-file-directory /usr/lib/debug:/mnt/symbols/linux
 
 # save command history across sessions
 set history save on
+set history remove-duplicates unlimited
 set history filename ~/.gdb-history
 set history size 5000
+
+if $GDB_IS_X64
+  set disassembly-flavor intel
+end
+
+# -gdwarf-4 -gsplit-dwarf -ggnu-pubnames -Wl,--gdb-index
+if $GDB_VERSION >= 10
+    maint set worker-threads unlimited
+end
 
 # use set substitute-path from to
 # '/foo/bar/bz.c' was moved to '/mnt/cross/baz.c', use
@@ -150,6 +215,14 @@ set history size 5000
 #  (also use 'catch load libname' or 'catch unload libname'
 # parent, child, ask
 set follow-fork-mode parent
+
+# break when specific file is opened
+#   catch syscall openat
+#   condition 1 $_streq((char *)$rsi, "/dev/nvidia0")
+#   commands 1
+#     bt
+#     c
+#     end
 
 # (gdb) help set scheduler-locking
 # Set mode for locking scheduler during execution.
@@ -161,10 +234,26 @@ set follow-fork-mode parent
 # NOTE: This can only be done when the binary is running...
 # set scheduler-locking on
 
+# https://stackoverflow.com/questions/5697042/command-to-suspend-a-thread-with-gdb
+# (gdb) help set non-stop
+# Set whether gdb controls the inferior in non-stop mode.
+
 # break open if !strcmp( *(char **)($esp+4), "game-icon.bmp" )
 
 set backtrace past-main
-set width unlimited
+
+# This can cause older QNX x86_64 GDBs to segfault?
+if $GDB_VERSION >= 10
+    set width unlimited
+end
+
+## TODO
+## # These make gdb never pause in its output
+## set height 0
+## set width 0
+##
+## set output-radix 0x10
+## set input-radix 0x10
 
 # When displaying a pointer to an object, identify the actual (derived) type of
 #   the object rather than the declared type, using the virtual function table.
@@ -189,10 +278,6 @@ set print array on
 # Pretty print C++ virtual function tables.
 set print vtbl on
 
-if $ARM == 0
-  set disassembly-flavor intel
-end
-
 set breakpoint pending on
 
 # "p/a ptr" should now print source file location of ptr variable.
@@ -210,20 +295,20 @@ set print repeats 0
 # This is useful when large arrays actually contain only short strings.
 set print null-stop
 
-define bt_args_on
-    color $CYAN
-    echo full backtrace args on\n
-    color $ENDC
-    set print frame-arguments scalar
-    set filename-display relative
+define bt_args_none
+    if $GDB_VERSION >= 10
+        backtrace -frame-arguments presence -frame-info auto
+    else
+        backtrace
+    end
 end
 
-define bt_args_off
-    color $CYAN
-    echo backtrace args off\n
-    color $ENDC
-    set print frame-arguments none
-    set filename-display basename
+define bt_args
+    if $GDB_VERSION >= 10
+        backtrace -frame-arguments scalars -frame-info auto
+    else
+        backtrace
+    end
 end
 
 # https://stackoverflow.com/questions/25786982/how-can-gdb-show-both-hex-and-ascii-when-examing-memory/25794979#25794979
@@ -238,9 +323,7 @@ define xxd
     set $addr = (char *)($arg0)
     set $endaddr = $addr + $size
     while $addr < $endaddr
-        color $BCYAN
-        printf "%p ", $addr
-        color $ENDC
+        printf "%s%p%s ", $BCYAN, $addr, $ENDC
 
         set $lineendaddr = $addr + 16
         if $lineendaddr > $endaddr
@@ -250,7 +333,12 @@ define xxd
         set $count = 0
         set $a = $addr
         while $a < $lineendaddr
-            printf "%02x ", *(unsigned char *)$a
+            if ( *(char *)$a < 0x20 || *(char *)$a >= 0x7f )
+                printf "%s%02x%s ", $BBLACK, *(unsigned char *)$a, $ENDC
+            else
+                printf "%02x ", *(unsigned char *)$a
+            end
+
             if $count == 7
                 printf " "
             end
@@ -268,21 +356,18 @@ define xxd
         end
 
         printf "|"
-        color $BGREEN
+
         set $count = 0
         set $a = $addr
         while $a < $lineendaddr
             if ( *(char *)$a < 0x20 || *(char *)$a >= 0x7f )
-                color $WHITE
-                printf "."
-                color $BGREEN
+                printf "%s.%s", $BBLACK, $ENDC
             else
-                printf "%c", *(char *)$a
+                printf "%s%c%s", $BGREEN, *(char *)$a, $ENDC
             end
             set $a++
             set $count++
         end
-        color $ENDC
 
         while $count < 16
             printf " "
@@ -298,32 +383,31 @@ document xxd
 hexdump usage: xxd address [count]
 end
 
+# define fstring
+# set $val=CurrentDevice->NamePrivate->DisplayIndex.Value
+# p ((FNameEntry&)GNameBlocksDebug[$val >> FNameDebugVisualizer::OffsetBits][FNameDebugVisualizer::EntryStride * ($val & FNameDebugVisualizer::OffsetMask)]).AnsiName
+# end
+
 define dumpaddr
     # Format letters are o(octal), x(hex), d(decimal), u(unsigned decimal),
     #   t(binary), f(float), a(address), i(instruction), c(char), s(string)
     #   and z(hex, zero padded on the left).
     #
     # Size letters are b(byte), h(halfword), w(word), g(giant, 8 bytes).
-    color $CYAN
-    echo 16-bit halfword:\n
-    color $ENDC
+    printf "%s16-bit halfword:%s\n", $CYAN, $ENDC
     x/1uh $arg0
     x/1dh $arg0
     x/1zh $arg0
     x/1th $arg0
 
-    color $CYAN
-    echo 32-bit word:\n
-    color $ENDC
+    printf "%secho 32-bit word:%s\n", $CYAN, $ENDC
     x/1f $arg0
     x/1uw $arg0
     x/1dw $arg0
     x/1zw $arg0
     x/1tw $arg0
 
-    color $CYAN
-    echo 64-bit giantword:\n
-    color $ENDC
+    printf "%secho 64-bit giantword:%s\n", $CYAN, $ENDC
     x/1ug $arg0
     x/1dg $arg0
     x/1zg $arg0
@@ -332,9 +416,7 @@ define dumpaddr
     set $i = 0
     set $val = *(unsigned long long *)$arg0
     if $val
-        color $CYAN
-        echo Bits set:\n
-        color $ENDC
+        printf "%sBits set:%s\n", $CYAN, $ENDC
 
         while $i < 64
             set $mask = 1ULL << $i
@@ -346,9 +428,7 @@ define dumpaddr
         echo \n
     end
 
-    color $CYAN
-    echo Bytes:\n
-    color $ENDC
+    printf "%sBytes:\n", $CYAN, $ENDC
     xxd $arg0 16
 end
 
@@ -356,60 +436,36 @@ document dumpaddr
 Dump given address with several different formats.
 end
 
-# http://silmor.de/qtstuff.printqstring.php
-define printqstring
-    printf "(QString)0x%x (length=%i): \"",&$arg0,$arg0.d->size
-    set $i=0
-    while $i < $arg0.d->size
-        set $c=$arg0.d->data[$i++]
-        if $c < 32 || $c > 127
-            printf "\\u0x%04x", $c
-        else
-            printf "%c", (char)$c
-        end
-    end
-    printf "\"\n"
-end
-
-define printqs5static
-    set $d=$arg0.d
-    printf "(Qt5 QString)0x%x length=%i: \"",&$arg0,$d->size
-    set $i=0
-    set $ca=(const ushort*)(((const char*)$d)+$d->offset)
-    while $i < $d->size
-        set $c=$ca[$i++]
-        if $c < 32 || $c > 127
-            printf "\\u%04x", $c
-        else
-            printf "%c" , (char)$c
-        end
-    end
-    printf "\"\n"
-end
-
-define printqs5dynamic
-    set $d=(QStringData*)$arg0.d
-    printf "(Qt5 QString)0x%x length=%i: \"",&$arg0,$d->size
-    set $i=0
-    while $i < $d->size
-        set $c=$d->data()[$i++]
-        if $c < 32 || $c > 127
-            printf "\\u%04x", $c
-        else
-            printf "%c" , (char)$c
-        end
-    end
-    printf "\"\n"
-end
-
 define next_time
     set $t0 = clock()
     next
     set $clocks = clock() - $t0
     set $CLOCKS_PER_SEC = 1000000
-    color $CYAN
-    printf "%.3f seconds.\n", (float)$clocks / $CLOCKS_PER_SEC
-    color $ENDC
+    printf "%s%.3f seconds.%s\n", $CYAN, (float)$clocks / $CLOCKS_PER_SEC, $ENDC
+end
+
+define colortest
+    printf "%sBLACK%s (BLACK)\n", $BLACK, $ENDC
+    printf "%sRED%s\n", $RED, $ENDC
+    printf "%sGREEN%s\n", $GREEN, $ENDC
+    printf "%sYELLOW%s\n", $YELLOW, $ENDC
+    printf "%sBLUE%s\n", $BLUE, $ENDC
+    printf "%sMAGENTA%s\n", $MAGENTA, $ENDC
+    printf "%sCYAN%s\n", $CYAN, $ENDC
+
+    printf "%sWHITE%s\n", $WHITE, $ENDC
+    printf "%sBBLACK%s\n", $BBLACK, $ENDC
+    printf "%sBRED%s\n", $BRED, $ENDC
+    printf "%sBGREEN%s\n", $BGREEN, $ENDC
+    printf "%sBYELLOW%s\n", $BYELLOW, $ENDC
+    printf "%sBBLUE%s\n", $BBLUE, $ENDC
+    printf "%sBMAGENTA%s\n", $BMAGENTA, $ENDC
+    printf "%sBCYAN%s\n", $BCYAN, $ENDC
+    printf "%sBWHITE%s\n", $BWHITE, $ENDC
+end
+
+document colortest
+Spew colors
 end
 
 # Load python helpers

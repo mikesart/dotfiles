@@ -14,9 +14,7 @@ path_prepend () { path_remove $1; export PATH="$1:$PATH"; }
 path_remove ()  { export PATH=`echo -n $PATH | awk -v RS=: -v ORS=: '$0 != "'$1'"' | sed 's/:$//'`; }
 
 # set PATH so it includes user's private bin if it exists.
-if [ -d "$HOME/bin" ] ; then 
-  path_prepend "$HOME/bin"
-fi
+[[ -d "$HOME/bin" ]] && path_prepend "$HOME/bin"
 
 export VISUAL=vi
 export EDITOR=vi
@@ -151,6 +149,7 @@ else
   PS1+="$BBlue\w$Color_Off"
   PS1+="$Green\$(__git_ps1 \" (%s)\")$Color_Off\$ "
 fi
+PS1+=$'\u00A0'
 
 bash_return_code()
 {
